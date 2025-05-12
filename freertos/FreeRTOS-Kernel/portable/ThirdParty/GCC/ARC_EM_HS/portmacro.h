@@ -1,8 +1,6 @@
 /*
- * FreeRTOS Kernel <DEVELOPMENT BRANCH>
+ * FreeRTOS Kernel V10.4.3
  * Copyright (C) 2020 Synopsys, Inc. or its affiliates.  All Rights Reserved.
- *
- * SPDX-License-Identifier: MIT
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -78,18 +76,16 @@
     #define false    0          /* false */
 #endif /* false */
 
-typedef portSTACK_TYPE   StackType_t;
-typedef long             BaseType_t;
-typedef unsigned long    UBaseType_t;
+typedef portSTACK_TYPE     StackType_t;
+typedef long               BaseType_t;
+typedef unsigned long      UBaseType_t;
 
-#if ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS )
-    typedef uint16_t     TickType_t;
-    #define portMAX_DELAY    ( TickType_t ) 0xffff
-#elif ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS )
-    typedef uint32_t     TickType_t;
-    #define portMAX_DELAY    ( TickType_t ) 0xffffffffUL
+#if ( configUSE_16_BIT_TICKS == 1 )
+    typedef uint16_t       TickType_t;
+    #define portMAX_DELAY          ( TickType_t ) 0xffff
 #else
-    #error configTICK_TYPE_WIDTH_IN_BITS set to unsupported tick type width.
+    typedef unsigned int   TickType_t;
+    #define portMAX_DELAY          ( TickType_t ) 0xffffffffUL
 #endif
 
 #define portNO_CRITICAL_NESTING    ( ( uint32_t ) 0 )
@@ -146,6 +142,8 @@ extern volatile unsigned int ulCriticalNesting;
 #if defined( __MW__ )
     extern void task_end_hook( void * pxTCB );
     #define portCLEAN_UP_TCB( pxTCB )    task_end_hook( ( void * ) pxTCB )
+#else
+    #define portCLEAN_UP_TCB( pxTCB )    ( void ) pxTCB
 #endif
 
 void vPortYield( void );

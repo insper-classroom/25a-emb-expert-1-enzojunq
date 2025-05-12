@@ -1,8 +1,6 @@
 /*
- * FreeRTOS Kernel <DEVELOPMENT BRANCH>
- * Copyright (C) 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * SPDX-License-Identifier: MIT
+ * FreeRTOS Kernel V10.4.3
+ * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -24,6 +22,7 @@
  * https://www.FreeRTOS.org
  * https://github.com/FreeRTOS
  *
+ * 1 tab == 4 spaces!
  */
 
 #ifndef PORTMACRO_H
@@ -40,67 +39,65 @@
  */
 
 /* Type definitions. */
-#define portCHAR        char
-#define portFLOAT       float
-#define portDOUBLE      double
-#define portLONG        long
-#define portSHORT       int
-#define portSTACK_TYPE  uint16_t
-#define portBASE_TYPE   short
+#define portCHAR		char
+#define portFLOAT		float
+#define portDOUBLE		double
+#define portLONG		long
+#define portSHORT		int
+#define portSTACK_TYPE	uint16_t
+#define portBASE_TYPE	short
 
 typedef portSTACK_TYPE StackType_t;
 typedef short BaseType_t;
 typedef unsigned short UBaseType_t;
 
 
-#if( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS )
-    typedef uint16_t TickType_t;
-    #define portMAX_DELAY ( TickType_t ) 0xffff
-#elif ( configTICK_TYPE_WIDTH_IN_BITS  == TICK_TYPE_WIDTH_32_BITS )
-    typedef uint32_t             TickType_t;
-    #define portMAX_DELAY    ( TickType_t ) 0xffffffffUL
+#if( configUSE_16_BIT_TICKS == 1 )
+	typedef uint16_t TickType_t;
+	#define portMAX_DELAY ( TickType_t ) 0xffff
 #else
-    #error configTICK_TYPE_WIDTH_IN_BITS set to unsupported tick type width.
+	typedef uint32_t TickType_t;
+	#define portMAX_DELAY ( TickType_t ) 0xffffffffUL
 #endif
 
 /*-----------------------------------------------------------*/
 
 /* Interrupt control macros. */
-#define portDISABLE_INTERRUPTS()    _DINT(); _NOP()
-#define portENABLE_INTERRUPTS()     _EINT();
+#define portDISABLE_INTERRUPTS()	_DINT(); _NOP()
+#define portENABLE_INTERRUPTS()		_EINT();
 /*-----------------------------------------------------------*/
 
 /* Critical section control macros. */
-#define portNO_CRITICAL_SECTION_NESTING     ( ( uint16_t ) 0 )
+#define portNO_CRITICAL_SECTION_NESTING		( ( uint16_t ) 0 )
 
-#define portENTER_CRITICAL()                                                    \
-{                                                                               \
-extern volatile uint16_t usCriticalNesting;                         \
-                                                                                \
-    portDISABLE_INTERRUPTS();                                                   \
-                                                                                \
-    /* Now interrupts are disabled usCriticalNesting can be accessed */         \
-    /* directly.  Increment ulCriticalNesting to keep a count of how many */    \
-    /* times portENTER_CRITICAL() has been called. */                           \
-    usCriticalNesting++;                                                        \
+#define portENTER_CRITICAL()													\
+{																				\
+extern volatile uint16_t usCriticalNesting;							\
+																				\
+	portDISABLE_INTERRUPTS();													\
+																				\
+	/* Now interrupts are disabled usCriticalNesting can be accessed */			\
+	/* directly.  Increment ulCriticalNesting to keep a count of how many */	\
+	/* times portENTER_CRITICAL() has been called. */							\
+	usCriticalNesting++;														\
 }
 
-#define portEXIT_CRITICAL()                                                     \
-{                                                                               \
-extern volatile uint16_t usCriticalNesting;                         \
-                                                                                \
-    if( usCriticalNesting > portNO_CRITICAL_SECTION_NESTING )                   \
-    {                                                                           \
-        /* Decrement the nesting count as we are leaving a critical section. */ \
-        usCriticalNesting--;                                                    \
-                                                                                \
-        /* If the nesting level has reached zero then interrupts should be */   \
-        /* re-enabled. */                                                       \
-        if( usCriticalNesting == portNO_CRITICAL_SECTION_NESTING )              \
-        {                                                                       \
-            portENABLE_INTERRUPTS();                                            \
-        }                                                                       \
-    }                                                                           \
+#define portEXIT_CRITICAL()														\
+{																				\
+extern volatile uint16_t usCriticalNesting;							\
+																				\
+	if( usCriticalNesting > portNO_CRITICAL_SECTION_NESTING )					\
+	{																			\
+		/* Decrement the nesting count as we are leaving a critical section. */	\
+		usCriticalNesting--;													\
+																				\
+		/* If the nesting level has reached zero then interrupts should be */	\
+		/* re-enabled. */														\
+		if( usCriticalNesting == portNO_CRITICAL_SECTION_NESTING )				\
+		{																		\
+			portENABLE_INTERRUPTS();											\
+		}																		\
+	}																			\
 }
 /*-----------------------------------------------------------*/
 
@@ -114,9 +111,9 @@ extern void vPortYield( void );
 /*-----------------------------------------------------------*/
 
 /* Hardware specifics. */
-#define portBYTE_ALIGNMENT          2
-#define portSTACK_GROWTH            ( -1 )
-#define portTICK_PERIOD_MS          ( ( TickType_t ) 1000 / configTICK_RATE_HZ )
+#define portBYTE_ALIGNMENT			2
+#define portSTACK_GROWTH			( -1 )
+#define portTICK_PERIOD_MS			( ( TickType_t ) 1000 / configTICK_RATE_HZ )
 #define portNOP()
 /*-----------------------------------------------------------*/
 
@@ -127,8 +124,9 @@ extern void vPortYield( void );
 #if configINTERRUPT_EXAMPLE_METHOD == 2
 
 extern void vTaskSwitchContext( void );
-#define portYIELD_FROM_ISR( x ) do { if( x ) vTaskSwitchContext(); } while( 0 )
+#define portYIELD_FROM_ISR( x ) if( x ) vTaskSwitchContext()
 
 #endif
 
 #endif /* PORTMACRO_H */
+

@@ -69,3 +69,4 @@ It contains two definitions of interrupt priority like the following.
 For more information about Renesas RX MCUs, please visit the following URL:
 
 https://www.renesas.com/products/microcontrollers-microprocessors/rx.html
+

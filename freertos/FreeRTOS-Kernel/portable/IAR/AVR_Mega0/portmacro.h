@@ -1,8 +1,6 @@
 /*
- * FreeRTOS Kernel <DEVELOPMENT BRANCH>
- * Copyright (C) 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * SPDX-License-Identifier: MIT
+ * FreeRTOS Kernel V10.4.3
+ * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -12,7 +10,8 @@
  * subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * copies or substantial portions of the Software. If you wish to use our Amazon
+ * FreeRTOS name, please do so in a fair use way that does not cause confusion.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
@@ -60,14 +59,12 @@ typedef portSTACK_TYPE   StackType_t;
 typedef signed char      BaseType_t;
 typedef unsigned char    UBaseType_t;
 
-#if ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS )
+#if ( configUSE_16_BIT_TICKS == 1 )
     typedef uint16_t     TickType_t;
     #define portMAX_DELAY    ( TickType_t ) 0xffff
-#elif ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS )
-    typedef uint32_t     TickType_t;
-    #define portMAX_DELAY    ( TickType_t ) ( 0xFFFFFFFFUL )
 #else
-    #error configTICK_TYPE_WIDTH_IN_BITS set to unsupported tick type width.
+    typedef uint32_t     TickType_t;
+    #define portMAX_DELAY    ( TickType_t ) 0xffffffffUL
 #endif
 
 /*-----------------------------------------------------------*/

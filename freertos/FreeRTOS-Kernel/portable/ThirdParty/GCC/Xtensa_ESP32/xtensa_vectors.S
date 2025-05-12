@@ -1,34 +1,24 @@
-/*
- * SPDX-FileCopyrightText: 2015-2019 Cadence Design Systems, Inc.
- *
- * SPDX-License-Identifier: MIT
- *
- * SPDX-FileContributor: 2016-2022 Espressif Systems (Shanghai) CO LTD
- */
-/*
- * Copyright (c) 2015-2019 Cadence Design Systems, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 /*******************************************************************************
+Copyright (c) 2006-2015 Cadence Design Systems Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 
         XTENSA VECTORS AND LOW LEVEL HANDLERS FOR AN RTOS
@@ -44,14 +34,14 @@
   medium level interrupts, by calling xt_set_interrupt_handler(). These
   handlers can be written in C, and must obey C calling convention. The
   handler table is indexed by the interrupt number. Each handler may be
-  provided with an argument.
+  provided with an argument. 
 
   Note that the system timer interrupt is handled specially, and is
   dispatched to the RTOS-specific handler. This timer cannot be hooked
   by application code.
 
-  Optional hooks are also provided to install a handler per level at
-  run-time, made available by compiling this source file with
+  Optional hooks are also provided to install a handler per level at 
+  run-time, made available by compiling this source file with 
   '-DXT_INTEXC_HOOKS' (useful for automated testing).
 
 !!  This file is a template that usually needs to be modified to handle       !!
@@ -91,10 +81,10 @@
       This allows more flexibility in locating code without the performance
       overhead of the 'l32r' literal data load in cases where the destination
       is in range of 'call0'. There is an additional benefit in that 'call0'
-      has a longer range than 'j' due to the target being word-aligned, so
+      has a longer range than 'j' due to the target being word-aligned, so 
       the 'l32r' sequence is less likely needed.
-   3. The use of 'call0' with -mlongcalls requires that register a0 not be
-      live at the time of the call, which is always the case for a function
+   3. The use of 'call0' with -mlongcalls requires that register a0 not be 
+      live at the time of the call, which is always the case for a function 
       call but needs to be ensured if 'call0' is used as a jump in lieu of 'j'.
    4. This use of 'call0' is independent of the C function call ABI.
 
@@ -306,13 +296,9 @@
     rsil    a3, \level - 1                  /* lower interrupt level by 1 */
     #endif
 
-    #ifdef XT_RTOS_TIMER_INT
     movi    a3, XT_TIMER_INTEN              /* a3 = timer interrupt bit */
     wsr     a4, INTCLEAR                    /* clear sw or edge-triggered interrupt */
     beq     a3, a4, 7f                      /* if timer interrupt then skip table */
-    #else
-    wsr     a4, INTCLEAR                    /* clear sw or edge-triggered interrupt */
-    #endif // XT_RTOS_TIMER_INT
 
     find_ms_setbit a3, a4, a3, 0            /* a3 = interrupt number */
 
@@ -336,7 +322,7 @@
     #else
     j       .L_xt_user_int_&level&          /* check for more interrupts */
     #endif
-    #ifdef XT_RTOS_TIMER_INT
+
 7:
 
     .ifeq XT_TIMER_INTPRI - \level
@@ -356,7 +342,6 @@
     call4   XT_RTOS_TIMER_INT
     #endif
     .endif
-    #endif // XT_RTOS_TIMER_INT
 
     #ifdef XT_USE_SWPRI
     j       8f
@@ -382,11 +367,11 @@
 
     .endm
 
-#if (ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 2, 0))
+
 /*
 --------------------------------------------------------------------------------
   Panic handler.
-  Should be reached by call0 (preferable) or jump only. If call0, a0 says where
+  Should be reached by call0 (preferable) or jump only. If call0, a0 says where 
   from. If on simulator, display panic message and abort, else loop indefinitely.
 --------------------------------------------------------------------------------
 */
@@ -458,29 +443,31 @@ panic_print_hex_a:
 panic_print_hex_ok:
     s32i a5,a3,0
     slli a2,a2,4
-
+    
     addi a4,a4,-1
     bnei a4,0,panic_print_hex_loop
     movi a5,' '
     s32i a5,a3,0
 
     ret
-#endif /* ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 2, 0) */
+
 
 
     .section    .rodata, "a"
     .align      4
 
+
+
 /*
 --------------------------------------------------------------------------------
     Hooks to dynamically install handlers for exceptions and interrupts.
     Allows automated regression frameworks to install handlers per test.
-    Consists of an array of function pointers indexed by interrupt level,
+    Consists of an array of function pointers indexed by interrupt level, 
     with index 0 containing the entry for user exceptions.
     Initialized with all 0s, meaning no handler is installed at each level.
     See comment in xtensa_rtos.h for more details.
 
-    *WARNING*  This array is for all CPUs, that is, installing a hook for
+    *WARNING*  This array is for all CPUs, that is, installing a hook for 
     one CPU will install it for all others as well!
 --------------------------------------------------------------------------------
 */
@@ -510,7 +497,7 @@ _xt_intexc_hooks:
   the appropriate stack frame, saves a few vector-specific registers and
   calls XT_RTOS_INT_ENTER to save the rest of the interrupted context
   and enter the RTOS, then sets up a C environment. It then calls the
-  user's interrupt handler code (which may be coded in C) and finally
+  user's interrupt handler code (which may be coded in C) and finally 
   calls XT_RTOS_INT_EXIT to transfer control to the RTOS for scheduling.
 
   While XT_RTOS_INT_EXIT does not return directly to the interruptee,
@@ -740,11 +727,11 @@ _xt_user_exc:
     rsr     a0, EXCSAVE_1                   /* save interruptee's a0 */
     s32i    a0, sp, XT_STK_A0
 
-    /* Set up PS for C, reenable debug and NMI interrupts, and clear EXCM. */
+    /* Set up PS for C, reenable hi-pri interrupts, and clear EXCM. */
     #ifdef __XTENSA_CALL0_ABI__
-    movi    a0, PS_INTLEVEL(XCHAL_DEBUGLEVEL - 2) | PS_UM
+    movi    a0, PS_INTLEVEL(XCHAL_EXCM_LEVEL) | PS_UM
     #else
-    movi    a0, PS_INTLEVEL(XCHAL_DEBUGLEVEL - 2) | PS_UM | PS_WOE
+    movi    a0, PS_INTLEVEL(XCHAL_EXCM_LEVEL) | PS_UM | PS_WOE
     #endif
     wsr     a0, PS
 
@@ -916,7 +903,7 @@ _xt_syscall_exc:
 --------------------------------------------------------------------------------
 Co-Processor Exception Handler (jumped to from User Exception Handler).
 These exceptions are generated by co-processor instructions, which are only
-allowed in thread code (not in interrupts or kernel code). This restriction is
+allowed in thread code (not in interrupts or kernel code). This restriction is 
 deliberately imposed to reduce the burden of state-save/restore in interrupts.
 --------------------------------------------------------------------------------
 */
@@ -1008,7 +995,7 @@ _xt_coproc_exc:
     #if (ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 2, 0))
     beqz    a15, .L_goto_invalid            /* not in a thread (invalid) */
     #else
-    #ifndef CONFIG_FREERTOS_FPU_IN_ISR
+    #ifndef CONFIG_FREERTOS_FPU_IN_ISR     
     beqz    a15, .L_goto_invalid
     #endif
     #endif /* ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 2, 0) */
@@ -1041,7 +1028,7 @@ _xt_coproc_exc:
     or      a4, a4, a2                      /* a4 = CPENABLE | (1 << n) */
     wsr     a4, CPENABLE
 
-/*
+/* 
 Keep loading _xt_coproc_owner_sa[n] atomic (=load once, then use that value
 everywhere): _xt_coproc_release assumes it works like this in order not to need
 locking.
@@ -1097,8 +1084,8 @@ locking.
 
     /*
     The config-specific HAL macro invoked below destroys a2-5, preserves a0-1.
-    It is theoretically possible for Xtensa processor designers to write TIE
-    that causes more address registers to be affected, but it is generally
+    It is theoretically possible for Xtensa processor designers to write TIE 
+    that causes more address registers to be affected, but it is generally 
     unlikely. If that ever happens, more registers needs to be saved/restored
     around this macro invocation, and the value in a15 needs to be recomputed.
     */
@@ -1126,8 +1113,8 @@ locking.
 
     /*
     The config-specific HAL macro invoked below destroys a2-5, preserves a0-1.
-    It is theoretically possible for Xtensa processor designers to write TIE
-    that causes more address registers to be affected, but it is generally
+    It is theoretically possible for Xtensa processor designers to write TIE 
+    that causes more address registers to be affected, but it is generally 
     unlikely. If that ever happens, more registers needs to be saved/restored
     around this macro invocation.
     */
@@ -1210,12 +1197,12 @@ _xt_lowint1:
     /* Save rest of interrupt context and enter RTOS. */
     call0   XT_RTOS_INT_ENTER               /* common RTOS interrupt entry */
 
-    /* !! We are now on the RTOS system stack !! */
+    /* !! We are now on the RTOS system stack !! */ 
 
     /* Set up PS for C, enable interrupts above this level and clear EXCM. */
     #ifdef __XTENSA_CALL0_ABI__
     movi    a0, PS_INTLEVEL(1) | PS_UM
-    #else
+    #else 
     movi    a0, PS_INTLEVEL(1) | PS_UM | PS_WOE
     #endif
     wsr     a0, PS
@@ -1247,7 +1234,7 @@ _xt_lowint1:
   the appropriate stack frame, saves a few vector-specific registers and
   calls XT_RTOS_INT_ENTER to save the rest of the interrupted context
   and enter the RTOS, then sets up a C environment. It then calls the
-  user's interrupt handler code (which may be coded in C) and finally
+  user's interrupt handler code (which may be coded in C) and finally 
   calls XT_RTOS_INT_EXIT to transfer control to the RTOS for scheduling.
 
   While XT_RTOS_INT_EXIT does not return directly to the interruptee,
@@ -1687,7 +1674,7 @@ and used for purposes requiring very short service times.
 
 Here are templates for high priority (level 2+) interrupt vectors.
 They assume only one interrupt per level to avoid the burden of identifying
-which interrupts at this level are pending and enabled. This allows for
+which interrupts at this level are pending and enabled. This allows for 
 minimum latency and avoids having to save/restore a2 in addition to a0.
 If more than one interrupt per high priority level is configured, this burden
 is on the handler which in any case must provide a way to save and restore
@@ -1812,12 +1799,12 @@ _NMIExceptionVector:
 
 WINDOW OVERFLOW AND UNDERFLOW EXCEPTION VECTORS AND ALLOCA EXCEPTION HANDLER
 
-Here is the code for each window overflow/underflow exception vector and
+Here is the code for each window overflow/underflow exception vector and 
 (interspersed) efficient code for handling the alloca exception cause.
 Window exceptions are handled entirely in the vector area and are very
-tight for performance. The alloca exception is also handled entirely in
+tight for performance. The alloca exception is also handled entirely in 
 the window vector area so comes at essentially no cost in code size.
-Users should never need to modify them and Cadence Design Systems recommends
+Users should never need to modify them and Cadence Design Systems recommends 
 they do not.
 
 Window handlers go at predetermined vector locations according to the
@@ -2065,3 +2052,6 @@ _WindowUnderflow12:
     .type       call_user_start,@function
     .align      4
     .literal_position
+
+
+

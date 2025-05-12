@@ -1,8 +1,6 @@
 /*
- * FreeRTOS Kernel <DEVELOPMENT BRANCH>
- * Copyright (C) 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * SPDX-License-Identifier: MIT
+ * FreeRTOS Kernel V10.4.3
+ * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -24,17 +22,16 @@
  * https://www.FreeRTOS.org
  * https://github.com/FreeRTOS
  *
+ * 1 tab == 4 spaces!
  */
 
 
 #ifndef PORTMACRO_H
     #define PORTMACRO_H
 
-/* *INDENT-OFF* */
-#ifdef __cplusplus
-    extern "C" {
-#endif
-/* *INDENT-ON* */
+    #ifdef __cplusplus
+        extern "C" {
+    #endif
 
 /*-----------------------------------------------------------
  * Port specific definitions.
@@ -59,18 +56,16 @@
     typedef long             BaseType_t;
     typedef unsigned long    UBaseType_t;
 
-    #if ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS )
+    #if ( configUSE_16_BIT_TICKS == 1 )
         typedef uint16_t     TickType_t;
         #define portMAX_DELAY              ( TickType_t ) 0xffff
-    #elif ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS )
+    #else
         typedef uint32_t     TickType_t;
         #define portMAX_DELAY              ( TickType_t ) 0xffffffffUL
 
 /* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
  * not need to be guarded with a critical section. */
         #define portTICK_TYPE_IS_ATOMIC    1
-    #else
-        #error configTICK_TYPE_WIDTH_IN_BITS set to unsupported tick type width.
     #endif
 /*-----------------------------------------------------------*/
 
@@ -85,26 +80,14 @@
     {                                                   \
         /* Set a PendSV to request a context switch. */ \
         portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; \
-        __asm( "    dsb");                                \
-        __asm( "    isb");                                \
+        __asm( "	dsb");                                \
+        __asm( "	isb");                                \
     }
 
-#define portNVIC_INT_CTRL_REG     ( *( ( volatile uint32_t * ) 0xe000ed04 ) )
-#define portNVIC_PENDSVSET_BIT    ( 1UL << 28UL )
-#define portEND_SWITCHING_ISR( xSwitchRequired ) \
-    do                                           \
-    {                                            \
-        if( xSwitchRequired != pdFALSE )         \
-        {                                        \
-            traceISR_EXIT_TO_SCHEDULER();        \
-            portYIELD();                         \
-        }                                        \
-        else                                     \
-        {                                        \
-            traceISR_EXIT();                     \
-        }                                        \
-    } while( 0 )
-#define portYIELD_FROM_ISR( x )    portEND_SWITCHING_ISR( x )
+    #define portNVIC_INT_CTRL_REG     ( *( ( volatile uint32_t * ) 0xe000ed04 ) )
+    #define portNVIC_PENDSVSET_BIT    ( 1UL << 28UL )
+    #define portEND_SWITCHING_ISR( xSwitchRequired )    if( xSwitchRequired != pdFALSE ) portYIELD()
+    #define portYIELD_FROM_ISR( x )                     portEND_SWITCHING_ISR( x )
 
 /*-----------------------------------------------------------*/
 
@@ -138,14 +121,14 @@
     #define portDISABLE_INTERRUPTS()                                     \
     {                                                                    \
         _set_interrupt_priority( configMAX_SYSCALL_INTERRUPT_PRIORITY ); \
-        __asm( "    dsb");                                                 \
-        __asm( "    isb");                                                 \
+        __asm( "	dsb");                                                 \
+        __asm( "	isb");                                                 \
     }
 
     #define portENABLE_INTERRUPTS()                   _set_interrupt_priority( 0 )
     #define portENTER_CRITICAL()                      vPortEnterCritical()
     #define portEXIT_CRITICAL()                       vPortExitCritical()
-    #define portSET_INTERRUPT_MASK_FROM_ISR()         _set_interrupt_priority( configMAX_SYSCALL_INTERRUPT_PRIORITY ); __asm( " dsb" ); __asm( "    isb")
+    #define portSET_INTERRUPT_MASK_FROM_ISR()         _set_interrupt_priority( configMAX_SYSCALL_INTERRUPT_PRIORITY ); __asm( "	dsb" ); __asm( "	isb")
     #define portCLEAR_INTERRUPT_MASK_FROM_ISR( x )    _set_interrupt_priority( x )
 /*-----------------------------------------------------------*/
 
@@ -174,10 +157,8 @@
 
 /*-----------------------------------------------------------*/
 
-/* *INDENT-OFF* */
-#ifdef __cplusplus
-    }
-#endif
-/* *INDENT-ON* */
+    #ifdef __cplusplus
+        }
+    #endif
 
 #endif /* PORTMACRO_H */

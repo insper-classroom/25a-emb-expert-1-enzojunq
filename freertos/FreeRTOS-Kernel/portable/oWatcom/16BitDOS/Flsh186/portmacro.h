@@ -1,8 +1,6 @@
 /*
- * FreeRTOS Kernel <DEVELOPMENT BRANCH>
- * Copyright (C) 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * SPDX-License-Identifier: MIT
+ * FreeRTOS Kernel V10.4.3
+ * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -24,16 +22,15 @@
  * https://www.FreeRTOS.org
  * https://github.com/FreeRTOS
  *
+ * 1 tab == 4 spaces!
  */
 
 #ifndef PORTMACRO_H
 #define PORTMACRO_H
 
-/* *INDENT-OFF* */
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
-/* *INDENT-ON* */
 
 /*-----------------------------------------------------------
  * Port specific definitions.
@@ -53,21 +50,19 @@
 #define portLONG        long
 #define portSHORT       int
 #define portSTACK_TYPE  uint16_t
-#define portBASE_TYPE   short
+#define portBASE_TYPE	short
 
 typedef portSTACK_TYPE StackType_t;
 typedef short BaseType_t;
 typedef unsigned short UBaseType_t;
 
 
-#if( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS )
+#if( configUSE_16_BIT_TICKS == 1 )
         typedef uint16_t TickType_t;
         #define portMAX_DELAY ( TickType_t ) 0xffff
-#elif ( configTICK_TYPE_WIDTH_IN_BITS  == TICK_TYPE_WIDTH_32_BITS )
-    typedef uint32_t             TickType_t;
-    #define portMAX_DELAY    ( TickType_t ) 0xffffffffUL
 #else
-    #error configTICK_TYPE_WIDTH_IN_BITS set to unsupported tick type width.
+        typedef uint32_t TickType_t;
+        #define portMAX_DELAY ( TickType_t ) 0xffffffffUL
 #endif
 /*-----------------------------------------------------------*/
 
@@ -93,7 +88,7 @@ void portENABLE_INTERRUPTS( void );
 #define portTICK_PERIOD_MS        ( ( TickType_t ) 1000 / configTICK_RATE_HZ )
 #define portBYTE_ALIGNMENT      2
 #define portINITIAL_SW          ( ( portSTACK_TYPE ) 0x0202 )   /* Start the tasks with interrupts enabled. */
-#define portNOP()               __asm{ nop }
+#define portNOP()				__asm{ nop }
 /*-----------------------------------------------------------*/
 
 /* Compiler specifics. */
@@ -107,10 +102,9 @@ void portENABLE_INTERRUPTS( void );
 #define portTASK_FUNCTION_PROTO( vFunction, pvParameters ) void vFunction( void *pvParameters )
 #define portTASK_FUNCTION( vFunction, pvParameters ) void vFunction( void *pvParameters )
 
-/* *INDENT-OFF* */
 #ifdef __cplusplus
-    }
+}
 #endif
-/* *INDENT-ON* */
 
 #endif /* PORTMACRO_H */
+

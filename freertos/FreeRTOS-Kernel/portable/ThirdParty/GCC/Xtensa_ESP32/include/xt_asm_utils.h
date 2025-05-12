@@ -1,14 +1,27 @@
 /*
- * SPDX-FileCopyrightText: 2017, Intel Corporation
+ * Copyright (c) 2017, Intel Corporation
  *
  * SPDX-License-Identifier: Apache-2.0
- *
- * SPDX-FileContributor: 2016-2022 Espressif Systems (Shanghai) CO LTD
  */
 
-/* File adapted to use on IDF FreeRTOS component, extracted
+/* Copyright 2015-2018 Espressif Systems (Shanghai) PTE LTD
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* File adapted to use on IDF FreeRTOS component, extracted 
  * originally from zephyr RTOS code base:
- * https://github.com/zephyrproject-rtos/zephyr/blob/dafd3485bf67880e667b6e9a758b0b64fb688d63/arch/xtensa/include/xtensa-asm2-s.h
+ * https://github.com/zephyrproject-rtos/zephyr/blob/dafd348/arch/xtensa/include/xtensa-asm2-s.h
  */
 
 #ifndef __XT_ASM_UTILS_H
@@ -45,31 +58,31 @@
  *   just a little bit, it's MUCH faster.  With a mostly full register
  *   file on an LX6 core (ESP-32) I'm measuring 145 cycles to spill
  *   registers with this vs. 279 (!) to do it with
- *   xthal_spill_windows().
+ *   xthal_spill_windows().  
  */
 
 .macro SPILL_ALL_WINDOWS
 #if XCHAL_NUM_AREGS == 64
-    and a12, a12, a12
-    rotw 3
-    and a12, a12, a12
-    rotw 3
-    and a12, a12, a12
-    rotw 3
-    and a12, a12, a12
-    rotw 3
-    and a12, a12, a12
-    rotw 4
+	and a12, a12, a12
+	rotw 3
+	and a12, a12, a12
+	rotw 3
+	and a12, a12, a12
+	rotw 3
+	and a12, a12, a12
+	rotw 3
+	and a12, a12, a12
+	rotw 4
 #elif XCHAL_NUM_AREGS == 32
-    and a12, a12, a12
-    rotw 3
-    and a12, a12, a12
-    rotw 3
-    and a4, a4, a4
-    rotw 2
-#else /* if XCHAL_NUM_AREGS == 64 */
-    #error Unrecognized XCHAL_NUM_AREGS
-#endif /* if XCHAL_NUM_AREGS == 64 */
-   .endm
+	and a12, a12, a12
+	rotw 3
+	and a12, a12, a12
+	rotw 3
+	and a4, a4, a4
+	rotw 2
+#else
+#error Unrecognized XCHAL_NUM_AREGS
+#endif
+.endm
 
-#endif /* ifndef __XT_ASM_UTILS_H */
+#endif
