@@ -1,6 +1,11 @@
 /*    File ring.wav
  *    Sample rate 11000 Hz
  */
+
+
+#ifndef RING_H
+#define RING_H
+
 #define WAV_DATA_LENGTH 59400 
 
 uint8_t WAV_DATA[] = {
@@ -3718,3 +3723,6 @@ uint8_t WAV_DATA[] = {
     128,118,119,127,120,117,124,121,118,124,123,119,122,122,119,121,
     122,121,121,122,121,121,121,121,121    
 };
+
+
+#endif // RING_H
